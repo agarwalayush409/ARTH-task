@@ -2,6 +2,9 @@
 
 import os
 import subprocess as sp
+import getpass
+
+
 # docker , LVM
 def MENU():
     print('Services - ')
@@ -9,22 +12,42 @@ def MENU():
     print('2. LVM')
     print('3. AWS')
     print('4. Hadoop')
+    print('5. Webserver')
+    print('Basic Commands-')
+    print('6. Date')
+    print('7. Cal')
+    print('8. Open Firefox')
+    print('9. Ifconfig')
     service = int(input('Enter here : '))
     if service == 1:
         dockerconf()
     #elif service == 2:
         #lvmconf()
     elif service == 3:
-        awsconf()
+      	awsconf()
     #elif service == 4:
         #hadoopconf()
-    else : 
+    elif service == 5:
+        webser_conf()
+    elif service == 6:
+        x=sp.getoutput('date')
+        print(x)
+    elif service == 7 :
+        x=sp.getoutput('cal')
+        print(x)
+    elif service == 8:
+        x=sp.getoutput('firefox')
+        print(x)
+    elif service == 9:
+        x=sp.getoutput('ifconfig')
+        print(x)
+    else :
         print('unsupported input')
         
-
+    
 def dockerconf():
     ec = sp.getoutput('docker --version | echo $?')
-    if ec != 0 :
+    if ec == 0 :
         print('docker is not installed')
         pass
     else :
@@ -40,13 +63,13 @@ def dockerconf():
         print("9. Configure webserver(httpd) in docker container")
         command = input('\nEnter your choice - ')
         if command == 1:
-            op = input('1.start  2.stop  3.status')
+            op = int(input('1.start  2.stop  3.status'))
             if op == 1: sp.getoutput('systemctl start docker')
             elif op == 2: sp.getoutput('sytemctl stop docker')
             elif op == 3: sp.getoutput('systemctl status docker')
             else: print('unsupported input')
         elif command == 2:
-            op = input('1.Recent process  2.All process')
+            op = int(input('1.Recent process  2.All process'))
             if op == 1: sp.getoutput('docker ps')
             elif op == 2: sp.getoutput('docker ps -a')
             else: print('unsupported input')
@@ -70,21 +93,96 @@ def dockerconf():
             httpdconf()
         else: print('Error')
         
-        
-#def httpdconf()        
-#def Menussh()
-#def lvmconf()
+def Menussh():
+        print("Enter the ip address of remote host",end=": ")
+        ip=input()
+        print('Basic Commands-')
+        print('1. Date')
+        print('2. Cal')
+        #print('3. Open Firefox')
+        service = int(input('Enter here : '))
+        if service == 1:
+            sp.getoutput("ssh {} date".format(ip))
+        elif service == 2:
+            sp.getoutput("ssh {} cal".format(ip)) 
+        #elif service == 3:
+            #sp.getoutput("ssh {} firefox".format(ip))
+
+		else :
+            print('unsupported input')
+
+def lvmconf():
+	print("\t\t--------LVM Partitions-------")
+	print("1. Check available disks")
+	print("2. Create physical volumes(PV)")
+	print("3. Create Volume Group (VG)")
+	print("4. Create Logical volumes(LV)")
+	print("5. Format the created LV")
+	print("6. Mount the LV")
+	print("7. Extend Volume Group")
+	print("8. Format the extende volume")
+	lvm = int(input("Enter your choice : "))
+	if lvm == 1:
+		p = os.system('fdisk -l')
+		print(p)
+	elif lvm == 2:
+		pv():
+			vol = input("Enter name of disk : ")
+			q = os.system('pvcreate {0}'.format(vol))
+			print(q)			
+		x=input(Do you want to convert harddisk into physical volume (y/n):)
+		if x == "y" or x == "Y"
+			pv()
+		else:
+			lvmconf()
+	elif lvm == 3:
+		a = input("Enter the name for volume group :")
+		b = input("Enter name of physical volume:")
+		c = input("Enter name of physical volume:")
+		s = os.system("vgcreate {0} {1} {2}".format(a,b,c))
+	elif lvm == 4:
+		e = input("Enter size for LV in (G/M/T):")
+		d = input("Enter name for LV :")
+		f = input("Enter name of created volume group: ")
+		lv = os.system("lvcreate --size {0} --name {1} {2}".format(e,d,f))
+	elif lvm == 5:
+		vg_nm = input("Enter Created VG name :")
+		lv_nm = input("Enter Created LV name :")
+		frmt = os.system("mkfs.ext4 /dev/{0}/{1}".format(vg_nm,lv_nm))
+	elif lvm == 6:
+		vg = input("Enter created name of volume group.")
+		ln = input("Enter Created LV name :")
+		dr = input("Enter name to create directory:")
+		os.system("mkdir /{0}".format(dr))	
+		print("mounting your partition on created directory...")
+		os.system("mount /dev/{0}/{1} /{2}".format(vg,ln,dr))
+		print("partition mounted successfully")
+	elif lvm == 7:
+		u = input("Howm much size do you want to extend ,Enter size in (G/M/T):")
+		w = input("Enter name of created volume group: ")
+		v = input("Enter name of created LV :")
+		resize = os.system("lvextend --size +{0}/{1}/{2}".format(u,w,v))
+		print(resize)
+	elif lvm == 8:
+		r_v = input("Enter name of created volume group: ")
+		r_l = input("Enter name of created LV :")
+		re_frmt = os.system("resize2fs /dev/{0}/{1}".format(r_v,r_l))
+		print(re_frmt)
+	else :
+                print('unsupported input')
+				
+		
 def awsconf():
-        print('--Services--')
+        print('-----------Services-----------')
         print('EC2')
         print('EBS')
         print('S3 ')
         aws_ser = input('Enter here : ')
-        if aws_ser == 'EC2' or 'ec2' :
+        if aws_ser == 'EC2' or aws_ser == 'ec2' :
         	ec2conf()
-        elif aws_ser == 'EBS' or 'ebs':
+        elif aws_ser == 'EBS' or aws_ser == 'ebs':
                 ebsconf()
-        elif aws_ser == 'S3' or 's3':
+        elif aws_ser == 'S3' or aws_ser == 's3':
                 s3conf()
         else :
                 print('unsupported input')
@@ -144,7 +242,7 @@ def ec2conf():
         print('unsupported input')
 
 def ebsconf():
-    print("-----------EBS----------")
+    print("-------------EBS-------------")
     print("1. Create EBS volume")
     print("2. Attach EBS volume to EC2 instance")
     command = int(input('\nEnter your choice - '))
@@ -163,7 +261,7 @@ def ebsconf():
             
             
 def s3conf():
-    print("-----------S3----------")
+    print("---------------S3-------------")
     print("1. Create Bucket")
     print("2. List buckets and objects")
     print("3. Create Object")
@@ -172,7 +270,8 @@ def s3conf():
     command = int(input('\nEnter your choice - '))
     if command ==1:
         buck_name = input("Enter unique bucket name : ")
-        s = sp.getoutput('aws s3 mb s3://{}'.format(buck_name))
+        region_name = input("Enter region name :")
+        s = sp.getoutput('aws s3 mb s3://{0} --region {1}'.format(buck_name,region_name))
         print(s)
     elif command ==2 :
         s = sp.getoutput('aws s3 ls')
@@ -190,16 +289,60 @@ def s3conf():
         s = sp.getoutput('aws s3 rm s3://{0}/{1}'.format(buck_name,obj_name))
         print(s)
 #def hadoopconf()
+def webser_conf():
+    os.system("tput setaf 7")
+    print("\t\t\t==============================================")
+    os.system("tput setaf 2")
+    print("\t\t\t| YOU CAN CONFIGURE WEBSERVER EASILY USING MY TUI |")
+    os.system("tput setaf 7")
+    print("\t\t\t==============================================")
+    print("\t\t\tTo configure webserver following steps are must")
+    print("\t\t\t install httpd ")
+    print("\t\t\t start the service of httpd")
+    print("\t\t\t===============================================")
+                                        
+    name=input("Enter install to install the httpd :")
+    q = os.system("yum install httpd".format(name))
+    print(q)
+    os.system("tput setaf 2")
+    print("Done.")
+    print("\t\t\t===============================================")
+    os.system("tput setaf 7")
+    state = input("Enter start to start the service:")
+    r = os.system("systemctl {0} httpd".format(state))
+    print("Configuration done !")
+    
+os.system("clear")
 
+
+os.system("tput setaf 7")
+print("\t\t\t==============================================")
+os.system("tput setaf 2")
+print("\t\t\t|Hey Welcome to my TUI that makes life simple|")
+os.system("tput setaf 7")
+print("\t\t\t==============================================")
+
+
+passwd=getpass.getpass("Enter the password: ")
+
+apass="redhat"
+
+if passwd != apass:
+	print("Sorry! You've entered the wrong password..")
+	exit()
+
+	
 while(True):
     system = input('Do you want to use local or remote(l/r) - \n')
-    if system == 'l':
+    if system == 'l' or system == 'L':
         MENU()
-    elif system == 'r':
+    elif system == 'r' or system == 'R':
         Menussh()
     else:
         print('unsupported input\n')
     x=input('Do you want to exit (y/n) - \n')
-    if x == y:
+    if x == 'y' or x == 'Y':
         exit()
+    else:
+        continue
 
